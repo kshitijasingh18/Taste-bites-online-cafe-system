@@ -1,0 +1,14 @@
+
+========== TASTY BITES ONLINE BILL ==========
+🕒 Order Accepted Time: 2025-11-11T10:27:01.349327900
+-------------------------------------------
+Espresso        x  2 = $7.00
+Sandwich        x  4 = $22.00
+-------------------------------------------
+Total Items Ordered: 2
+Total Quantity:      6
+Grand Total:        $29.00
+-------------------------------------------
+✅ Your order has been accepted. Please collect it soon!
+Thank you for ordering at TastyBites! 🍔
+===========================================

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TastyBites Online Ordering</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-amber-50 min-h-screen flex flex-col items-center p-6">
+  <h1 class="text-3xl font-bold text-orange-600 mb-4">🍔 TastyBites Online Ordering 🍟</h1>
+  <p class="text-gray-600 mb-6">🕗 Café Timings: 08:00 - 22:00</p>
+
+  <div id="menu" class="grid sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6"></div>
+
+  <div class="w-full max-w-md bg-white rounded-2xl shadow p-4">
+    <h2 class="text-xl font-semibold text-center mb-3">🧾 Your Order</h2>
+    <ul id="orderList" class="text-gray-700 space-y-1 mb-3"></ul>
+    <p class="font-semibold">Total: $<span id="total">0.00</span></p>
+    <button id="checkoutBtn" class="w-full mt-3 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg">Checkout</button>
+  </div>
+
+  <div id="bill" class="hidden w-full max-w-md mt-6 bg-white rounded-2xl shadow p-4"></div>
+
+  <script>
+    const menu = [
+      { name: "Espresso", price: 3.5, available: 10 },
+      { name: "Cappuccino", price: 4.0, available: 8 },
+      { name: "Latte", price: 4.5, available: 6 },
+      { name: "Mocha", price: 5.0, available: 5 },
+      { name: "Croissant", price: 2.75, available: 15 },
+      { name: "Muffin", price: 2.5, available: 12 },
+      { name: "Sandwich", price: 5.5, available: 7 },
+    ];
+
+    const order = [];
+
+    const menuDiv = document.getElementById("menu");
+    const orderList = document.getElementById("orderList");
+    const totalSpan = document.getElementById("total");
+    const billDiv = document.getElementById("bill");
+
+    // Render menu
+    menu.forEach((item, index) => {
+      const card = document.createElement("div");
+      card.className = "bg-white p-4 rounded-2xl shadow hover:shadow-md text-center";
+      card.innerHTML = `
+        <h3 class="font-semibold text-lg">${item.name}</h3>
+        <p class="text-gray-500">$${item.price.toFixed(2)}</p>
+        <p class="text-sm text-gray-400">Available: ${item.available}</p>
+        <input type="number" id="qty-${index}" min="1" max="${item.available}" placeholder="Qty" class="border mt-2 w-16 text-center rounded">
+        <button class="mt-2 bg-orange-500 text-white px-3 py-1 rounded hover:bg-orange-600">Add</button>
+      `;
+      card.querySelector("button").onclick = () => addToOrder(index);
+      menuDiv.appendChild(card);
+    });
+
+    function addToOrder(i) {
+      const qtyInput = document.getElementById(`qty-${i}`);
+      const qty = parseInt(qtyInput.value);
+      if (!qty || qty <= 0) return alert("Enter a valid quantity!");
+
+      const item = menu[i];
+      if (qty > item.available) return alert(`Only ${item.available} available!`);
+
+      item.available -= qty;
+      order.push({ ...item, quantity: qty });
+
+      updateOrder();
+    }
+
+    function updateOrder() {
+      orderList.innerHTML = "";
+      let total = 0;
+      order.forEach(o => {
+        const li = document.createElement("li");
+        li.textContent = `${o.name} x${o.quantity} = $${(o.price * o.quantity).toFixed(2)}`;
+        orderList.appendChild(li);
+        total += o.price * o.quantity;
+      });
+      totalSpan.textContent = total.toFixed(2);
+    }
+
+    document.getElementById("checkoutBtn").onclick = () => {
+      if (order.length === 0) return alert("No items ordered!");
+
+      const time = new Date().toLocaleString();
+      let receipt = `
+        <h2 class="text-xl font-bold text-center mb-2">✅ Order Confirmed!</h2>
+        <p class="text-center text-gray-500 mb-3">🕒 ${time}</p>
+        <ul class="mb-2 text-gray-700">
+          ${order.map(o => `<li>${o.name} x${o.quantity} = $${(o.price * o.quantity).toFixed(2)}</li>`).join("")}
+        </ul>
+        <p class="font-semibold text-right">Total: $${totalSpan.textContent}</p>
+        <p class="text-center mt-3 text-green-600 font-medium">Thank you for ordering at TastyBites! 🍔</p>
+      `;
+      billDiv.innerHTML = receipt;
+      billDiv.classList.remove("hidden");
+    };
+  </script>
+</body>
+</html>
